@@ -1,4 +1,4 @@
-module web
+module echo-boilerplate
 
 go 1.16
 
