@@ -4,7 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson"
 	"net/http"
-	"github.com/ofarukbicer/echo-boilerplate/database"
+	"web/database"
 )
 
 func GetIndex(c echo.Context) error {
