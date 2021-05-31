@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/labstack/echo/v4"
-	"web/handlers/api"
+	"github.com/ofarukbicer/echo-boilerplate/handlers/api"
 )
 
 func Api(root *echo.Group) {
