@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/labstack/echo/v4"
-	"web/handlers/web"
+	"github.com/ofarukbicer/echo-boilerplate/handlers/web"
 )
 
 func Web(root *echo.Echo) {
