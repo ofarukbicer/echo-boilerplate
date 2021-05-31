@@ -4,7 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"html/template"
 	"io"
-	"github.com/ofarukbicer/echo-boilerplate/routes"
+	"web/routes"
 )
 
 type Template struct {
