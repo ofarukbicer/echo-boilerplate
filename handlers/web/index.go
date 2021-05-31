@@ -7,12 +7,6 @@ import (
 	"web/database"
 )
 
-type Convert struct {
-	Id   int    `bson:"_id,omitempty"`
-	Name string `bson:"name,omitempty"`
-}
-var s Convert
-
 func GetIndex(c echo.Context) error {
 	db := database.Client("deneme","deneme")
 	data := db.Find(bson.M{})
