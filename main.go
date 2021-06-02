@@ -21,16 +21,16 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, _ echo.Con
 func main() {
 	e := echo.New()
 
+	// Basic Logger
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "method=${method}, uri=${uri}, status=${status}\n",
+	}))
+
 	// Template Render (html) assets/templates/index.html
 	e.Renderer = &Template{templates: template.Must(template.ParseGlob("./assets/templates/*"))}
 
 	// Static Files css,img,js ..
 	e.Static("/static", "assets/static")
-
-	// Basic Logger
-	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: "method=${method}, uri=${uri}, status=${status}\n",
-	}))
 
 	// Routing Main
 	routes.Web(e)
