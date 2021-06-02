@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// DataClient Struct
 type DataClient struct {
 	mongoClient *mongo.Client
 	mongoCtx context.Context
@@ -15,6 +16,7 @@ type DataClient struct {
 	mongoCollection *mongo.Collection
 }
 
+// Client mongoDb connection Client(Database string, Collection string) DataClient
 func Client(Database string, Collection string) DataClient {
 	client, err := mongo.NewClient() // local mongodb
 	// client, err := mongo.NewClient(options.Client().ApplyURI("MongoDB-Atlas-URL-String"))
@@ -36,10 +38,12 @@ func Client(Database string, Collection string) DataClient {
 	}
 }
 
+// InsertOne mongoDb Insert Data (x DataClient) InsertOne(data bson.D) (*mongo.InsertOneResult, error)
 func (x DataClient) InsertOne(data bson.D) (*mongo.InsertOneResult, error) {
 	return x.mongoCollection.InsertOne(x.mongoCtx, data)
 }
 
+// FindOne mongoDb Find One Data (x DataClient) FindOne(query bson.M) bson.M
 func (x DataClient) FindOne(query bson.M) bson.M {
 	if err := x.mongoCollection.FindOne(x.mongoCtx, query).Decode(&query); err != nil {
 		log.Fatal(err)
@@ -47,6 +51,7 @@ func (x DataClient) FindOne(query bson.M) bson.M {
 	return query
 }
 
+// Find mongoDb Find All Data (x DataClient) Find(query bson.M) []bson.M
 func (x DataClient) Find(query bson.M) []bson.M {
 	filter, err := x.mongoCollection.Find(x.mongoCtx, query)
 	if err != nil {

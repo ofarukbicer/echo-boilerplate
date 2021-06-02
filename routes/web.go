@@ -6,6 +6,8 @@ import (
 )
 
 func Web(root *echo.Echo) {
+	// GET - /
 	root.GET("/", web.GetIndex).Name = "webGetIndex"
+	// POST - /
 	root.POST("/", web.AddData).Name = "webAddData"
 }

@@ -7,6 +7,7 @@ import (
 	"web/database"
 )
 
+// GetIndex GET - /api - Handler
 func GetIndex(c echo.Context) error {
 	db := database.Client("deneme", "deneme")
 	data := db.Find(bson.M{})
@@ -16,6 +17,7 @@ func GetIndex(c echo.Context) error {
 	)
 }
 
+// AddData POST - /api - Handler
 func AddData(c echo.Context) error {
 	db := database.Client("deneme","deneme")
 	db.InsertOne(bson.D{

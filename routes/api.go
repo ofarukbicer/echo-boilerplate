@@ -6,6 +6,8 @@ import (
 )
 
 func Api(root *echo.Group) {
-	root.GET("/", api.GetIndex).Name = "apiGetIndex"
-	root.POST("/", api.AddData).Name = "apiAddData"
+	// GET - /api
+	root.GET("", api.GetIndex).Name = "apiGetIndex"
+	// POST - /api
+	root.POST("", api.AddData).Name = "apiAddData"
 }
