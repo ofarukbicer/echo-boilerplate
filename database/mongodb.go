@@ -43,6 +43,11 @@ func (x DataClient) InsertOne(data bson.D) (*mongo.InsertOneResult, error) {
 	return x.mongoCollection.InsertOne(x.mongoCtx, data)
 }
 
+// InsertMany mongoDb Insert Multiple Data (x DataClient) InsertMany(dataset []interface{}) (*mongo.InsertManyResult, error)
+func (x DataClient) InsertMany(dataset []interface{}) (*mongo.InsertManyResult, error) {
+	return x.mongoCollection.InsertMany(x.mongoCtx, dataset)
+}
+
 // FindOne mongoDb Find One Data (x DataClient) FindOne(query bson.M) bson.M
 func (x DataClient) FindOne(query bson.M) bson.M {
 	if err := x.mongoCollection.FindOne(x.mongoCtx, query).Decode(&query); err != nil {
