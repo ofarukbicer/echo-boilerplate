@@ -2,22 +2,28 @@ package database
 
 import (
 	"context"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"log"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // DataClient Struct
 type DataClient struct {
-	mongoClient *mongo.Client
-	mongoCtx context.Context
-	mongoErr error
-	mongoCollection *mongo.Collection
+	client       *mongo.Client
+	databaseName string
+	ctx          context.Context
 }
 
-// Client mongoDb connection Client(Database string, Collection string) DataClient
-func Client(Database string, Collection string) DataClient {
+// DataClient Struct
+type DataCollection struct {
+	ctx        context.Context
+	collection *mongo.Collection
+}
+
+// Client mongoDb connection Client(Database string) DataClient
+func Client(Database string) DataClient {
 	client, err := mongo.NewClient() // local mongodb
 	// client, err := mongo.NewClient(options.Client().ApplyURI("MongoDB-Atlas-URL-String"))
 	if err != nil {
@@ -29,41 +35,48 @@ func Client(Database string, Collection string) DataClient {
 		log.Fatal(err)
 	}
 
-	collection := client.Database(Database).Collection(Collection)
 	return DataClient{
-		mongoClient: client,
-		mongoCtx: ctx,
-		mongoErr: err,
-		mongoCollection: collection,
+		client:       client,
+		databaseName: Database,
+		ctx:          ctx,
 	}
 }
 
-// InsertOne mongoDb Insert Data (x DataClient) InsertOne(data bson.D) (*mongo.InsertOneResult, error)
-func (x DataClient) InsertOne(data bson.D) (*mongo.InsertOneResult, error) {
-	return x.mongoCollection.InsertOne(x.mongoCtx, data)
+// Collection connection (x DataClient) Collection(Collection string) DataCollection
+func (x DataClient) Collection(Collection string) DataCollection {
+	collection := x.client.Database(x.databaseName).Collection(Collection)
+	return DataCollection{
+		ctx:        x.ctx,
+		collection: collection,
+	}
 }
 
-// InsertMany mongoDb Insert Multiple Data (x DataClient) InsertMany(dataset []interface{}) (*mongo.InsertManyResult, error)
-func (x DataClient) InsertMany(dataset []interface{}) (*mongo.InsertManyResult, error) {
-	return x.mongoCollection.InsertMany(x.mongoCtx, dataset)
+// InsertOne mongoDb Insert Data (x DataCollection) InsertOne(data bson.D) (*mongo.InsertOneResult, error)
+func (x DataCollection) InsertOne(data bson.D) (*mongo.InsertOneResult, error) {
+	return x.collection.InsertOne(x.ctx, data)
 }
 
-// FindOne mongoDb Find One Data (x DataClient) FindOne(query bson.M) bson.M
-func (x DataClient) FindOne(query bson.M) bson.M {
-	if err := x.mongoCollection.FindOne(x.mongoCtx, query).Decode(&query); err != nil {
+// InsertMany mongoDb Insert Multiple Data (x DataCollection) InsertMany(dataset []interface{}) (*mongo.InsertManyResult, error)
+func (x DataCollection) InsertMany(dataset []interface{}) (*mongo.InsertManyResult, error) {
+	return x.collection.InsertMany(x.ctx, dataset)
+}
+
+// FindOne mongoDb Find One Data (x DataCollection) FindOne(query bson.M) bson.M
+func (x DataCollection) FindOne(query bson.M) bson.M {
+	if err := x.collection.FindOne(x.ctx, query).Decode(&query); err != nil {
 		log.Fatal(err)
 	}
 	return query
 }
 
-// Find mongoDb Find All Data (x DataClient) Find(query bson.M) []bson.M
-func (x DataClient) Find(query bson.M) []bson.M {
-	filter, err := x.mongoCollection.Find(x.mongoCtx, query)
+// Find mongoDb Find All Data (x DataCollection) Find(query bson.M) []bson.M
+func (x DataCollection) Find(query bson.M) []bson.M {
+	filter, err := x.collection.Find(x.ctx, query)
 	if err != nil {
 		log.Fatal(err)
 	}
 	var filtered []bson.M
-	if err = filter.All(x.mongoCtx, &filtered); err != nil {
+	if err = filter.All(x.ctx, &filtered); err != nil {
 		log.Fatal(err)
 	}
 
