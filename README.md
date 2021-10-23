@@ -11,7 +11,7 @@ rm -rf go.mod go.sum
 go mod init $PROJECT_NAME
 go mod tidy
 
-# Note: don't forget to update the invoked webpacks in all files after doing this.
+# Note: don't forget to update the invoked web packs in all files after doing this.
 
 
 # Start 
