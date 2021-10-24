@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -61,24 +62,39 @@ func (x DataCollection) InsertMany(dataset []interface{}) (*mongo.InsertManyResu
 	return x.collection.InsertMany(x.ctx, dataset)
 }
 
-// FindOne mongoDb Find One Data (x DataCollection) FindOne(query bson.M) bson.M
-func (x DataCollection) FindOne(query bson.M) bson.M {
+// FindOne mongoDb Find One Data (x DataCollection) FindOne(query bson.M) (bson.M, error)
+func (x DataCollection) FindOne(query bson.M) (bson.M, error) {
 	if err := x.collection.FindOne(x.ctx, query).Decode(&query); err != nil {
-		log.Fatal(err)
+		return bson.M{}, err
 	}
-	return query
+	return query, nil
 }
 
-// Find mongoDb Find All Data (x DataCollection) Find(query bson.M) []bson.M
-func (x DataCollection) Find(query bson.M) []bson.M {
-	filter, err := x.collection.Find(x.ctx, query)
-	if err != nil {
-		log.Fatal(err)
-	}
-	var filtered []bson.M
-	if err = filter.All(x.ctx, &filtered); err != nil {
-		log.Fatal(err)
+// FindById mongoDb Find By Id One Data (x DataCollection) FindById(id string) (bson.M, error)
+func (x DataCollection) FindById(id string) (bson.M, error) {
+	objectId, err1 := primitive.ObjectIDFromHex(id)
+	if err1 != nil {
+		return bson.M{}, err1
 	}
 
-	return filtered
+	var data bson.M
+	if err := x.collection.FindOne(x.ctx, bson.M{"_id": objectId}).Decode(&data); err != nil {
+		return bson.M{}, err
+	}
+	return data, nil
+}
+
+// Find mongoDb Find All Data (x DataCollection) Find(query bson.M) ([]bson.M, error)
+func (x DataCollection) Find(query bson.M) ([]bson.M, error) {
+	var filtered []bson.M
+	filter, err := x.collection.Find(x.ctx, query)
+	if err != nil {
+		return filtered, err
+	}
+
+	if err = filter.All(x.ctx, &filtered); err != nil {
+		return filtered, err
+	}
+
+	return filtered, nil
 }
